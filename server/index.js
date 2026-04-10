@@ -203,7 +203,7 @@ app.post('/api/doctors', authenticateToken, async (req, res) => {
     );
     const userId = userResult.rows[0].id;
     await pool.query('INSERT INTO public.user_roles (user_id, role) VALUES ($1, $2)', [userId, role]);
-    await pool.query('INSERT INTO public.profiles (user_id, full_name, role, department_id) VALUES ($1, $2, $3, $4)', [userId, full_name, role, department_id]);
+    await pool.query('INSERT INTO public.profiles (user_id, full_name, email, department_id) VALUES ($1, $2, $3, $4)', [userId, full_name, email, department_id]);
     res.json({ message: 'Doctor created' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -215,7 +215,7 @@ app.patch('/api/doctors/:userId', authenticateToken, async (req, res) => {
   try {
     await pool.query('UPDATE public.app_users SET full_name = $1 WHERE id = $2', [full_name, req.params.userId]);
     await pool.query('UPDATE public.user_roles SET role = $1 WHERE user_id = $2', [role, req.params.userId]);
-    await pool.query('UPDATE public.profiles SET full_name = $1, role = $2, department_id = $3 WHERE user_id = $4', [full_name, role, department_id, req.params.userId]);
+    await pool.query('UPDATE public.profiles SET full_name = $1, department_id = $2 WHERE user_id = $3', [full_name, department_id, req.params.userId]);
     res.json({ message: 'Doctor updated' });
   } catch (err) {
     res.status(500).json({ error: err.message });
