@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { downloadCsv } from '@/lib/export';
-import { Download, Edit, Plus, Trash2 } from 'lucide-react';
+import { Download, Edit, Plus, Trash2, Key } from 'lucide-react';
 import { toast } from 'sonner';
 
 type DoctorRow = any & {
@@ -32,6 +32,9 @@ const DoctorsPage = () => {
   const [doctors, setDoctors] = useState<DoctorRow[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const [resetPasswordDoctor, setResetPasswordDoctor] = useState<DoctorRow | null>(null);
+  const [newPassword, setNewPassword] = useState('');
   const [editDoctor, setEditDoctor] = useState<DoctorRow | null>(null);
   const [form, setForm] = useState({ full_name: '', email: '', password: '', role: 'general_doctor', department_id: '' });
 
@@ -145,6 +148,31 @@ const DoctorsPage = () => {
       fetchDoctors();
     } catch (err: any) {
       toast.error(err.message || (editDoctor ? 'Failed to update staff' : 'Failed to create staff member'));
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordDoctor || !newPassword) return;
+    const token = localStorage.getItem('auth_token');
+    try {
+      const res = await fetch(`${API_URL}/doctors/${resetPasswordDoctor.user_id}/reset_password`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ password: newPassword })
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to reset password');
+      }
+      toast.success(`Password for ${resetPasswordDoctor.full_name} has been reset.`);
+      setResetPasswordOpen(false);
+      setResetPasswordDoctor(null);
+      setNewPassword('');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to reset password');
     }
   };
 
@@ -263,6 +291,21 @@ const DoctorsPage = () => {
                 </div>
               </DialogContent>
             </Dialog>
+
+            <Dialog open={resetPasswordOpen} onOpenChange={(val) => { setResetPasswordOpen(val); if (!val) { setNewPassword(''); setResetPasswordDoctor(null); } }}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Reset Password for {resetPasswordDoctor?.full_name}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>New Password</Label>
+                    <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password" />
+                  </div>
+                  <Button onClick={handleResetPassword} className="w-full" disabled={!newPassword}>Reset Password</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -297,6 +340,9 @@ const DoctorsPage = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => { setResetPasswordDoctor(doctor); setResetPasswordOpen(true); }} title="Reset Password">
+                          <Key className="h-4 w-4 text-amber-500" />
+                        </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleEdit(doctor)}>
                           <Edit className="h-4 w-4" />
                         </Button>

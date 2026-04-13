@@ -245,6 +245,17 @@ app.patch('/api/doctors/:userId', authenticateToken, async (req, res) => {
   }
 });
 
+app.patch('/api/doctors/:userId/reset_password', authenticateToken, async (req, res) => {
+  const { password } = req.body;
+  try {
+    const hash = await bcrypt.hash(password, 10);
+    await pool.query('UPDATE public.app_users SET password_hash = $1 WHERE id = $2', [hash, req.params.userId]);
+    res.json({ message: 'Password reset successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.delete('/api/doctors/:userId', authenticateToken, async (req, res) => {
   try {
     await pool.query('DELETE FROM public.profiles WHERE user_id = $1', [req.params.userId]);
