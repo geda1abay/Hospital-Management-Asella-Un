@@ -83,7 +83,9 @@ app.get('/api/stats', authenticateToken, async (req, res) => {
     const bills = await pool.query('SELECT * FROM public.bills');
     const payments = await pool.query('SELECT * FROM public.payments');
 
-    const totalRevenue = payments.rows.reduce((sum, p) => sum + Number(p.amount), 0);
+    const totalBillsAmount = bills.rows.reduce((sum, b) => sum + Number(b.final_amount || 0), 0);
+    const totalPaymentsAmount = payments.rows.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+    const totalRevenue = totalBillsAmount + totalPaymentsAmount;
     const pendingBills = bills.rows.filter(b => b.status === 'pending').length;
 
     res.json({
@@ -209,28 +211,28 @@ app.delete('/api/departments/:id', authenticateToken, async (req, res) => {
 app.post('/api/doctors', authenticateToken, async (req, res) => {
   const { email, password, full_name, role, department_id } = req.body;
   console.log('Creating staff member:', { email, full_name, role, department_id });
-  
+
   try {
     const hash = await bcrypt.hash(password, 10);
-    
+
     // Start a transaction
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      
+
       const userResult = await client.query(
         'INSERT INTO public.app_users (email, password_hash, full_name) VALUES ($1, $2, $3) RETURNING id',
         [email, hash, full_name]
       );
       const userId = userResult.rows[0].id;
-      
+
       await client.query('INSERT INTO public.user_roles (user_id, role) VALUES ($1, $2)', [userId, role]);
-      
+
       await client.query(
-        'INSERT INTO public.profiles (user_id, full_name, email, department_id) VALUES ($1, $2, $3, $4)', 
+        'INSERT INTO public.profiles (user_id, full_name, email, department_id) VALUES ($1, $2, $3, $4)',
         [userId, full_name, email, (department_id || null)]
       );
-      
+
       await client.query('COMMIT');
       console.log('Staff member created successfully id:', userId);
       res.json({ message: 'Doctor created', id: userId });
@@ -339,16 +341,16 @@ app.post('/api/payments', authenticateToken, async (req, res) => {
       'INSERT INTO public.payments (bill_id, amount, method, reference_number, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [bill_id, amount, method, reference_number, status]
     );
-    
+
     // Update bill status logic
     const billRes = await pool.query('SELECT final_amount FROM public.bills WHERE id = $1', [bill_id]);
     const finalAmount = billRes.rows[0].final_amount;
     const payRes = await pool.query('SELECT SUM(amount) FROM public.payments WHERE bill_id = $1 AND status = \'completed\'', [bill_id]);
     const totalPaid = payRes.rows[0].sum || 0;
-    
+
     const newStatus = totalPaid >= finalAmount ? 'paid' : totalPaid > 0 ? 'partial' : 'pending';
     await pool.query('UPDATE public.bills SET status = $1 WHERE id = $2', [newStatus, bill_id]);
-    
+
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });

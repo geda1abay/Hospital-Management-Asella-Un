@@ -204,6 +204,8 @@ const LabDashboard = () => {
                       onChange={(e) => setCost(e.target.value)} 
                       placeholder="Enter amount to be paid at Admin"
                       className="pl-4"
+                      disabled={selectedRequest?.payment_status?.toLowerCase() === 'paid'}
+                      readOnly={selectedRequest?.payment_status?.toLowerCase() === 'paid'}
                     />
                   </div>
                   <p className="text-[10px] text-muted-foreground">This amount will be sent to the Admin dashboard for payment.</p>
