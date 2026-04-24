@@ -42,7 +42,7 @@ const AdminDashboard = () => {
       <div className="space-y-6">
         <div>
           <h2 className="font-heading text-2xl font-bold text-foreground">Welcome back, Admin</h2>
-          <p className="text-muted-foreground">Here's an overview of your hospital system.</p>
+          <p className="text-muted-foreground">Here's an overview of your clinic system.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {statCards.map((stat) => (

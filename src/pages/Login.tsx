@@ -46,7 +46,7 @@ const Login = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden p-4">
       <div 
-        className="absolute inset-0 z-0 bg-[url('/arsi_logo.jpg')] bg-cover bg-center bg-no-repeat blur-xl opacity-30"
+        className="absolute inset-0 z-0 bg-[url('/geda_logo.png')] bg-cover bg-center bg-no-repeat blur-xl opacity-30"
       />
       <div className="absolute inset-0 z-0 bg-background/40" />
 
@@ -55,8 +55,8 @@ const Login = () => {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary">
             <Stethoscope className="h-7 w-7 text-primary-foreground" />
           </div>
-          <h1 className="font-heading text-2xl font-bold text-foreground">Arsi University Hospital</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Hospital Management and Billing System</p>
+          <h1 className="font-heading text-2xl font-bold text-foreground">Geda Clinic</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Clinic Management and Billing System</p>
         </div>
 
         <Card>

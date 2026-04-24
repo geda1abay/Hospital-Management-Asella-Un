@@ -159,18 +159,28 @@ const GeneralDoctorPage = () => {
 
   const getTransactions = () => {
     const transactions = [
+      ...bills.map((b) => {
+        const patientName = patients.find(pat => pat.id === b.patient_id)?.name || '-';
+        return {
+          id: `bill-${b.id}`,
+          type: 'Bill Generated',
+          patient_name: patientName,
+          amount: Number(b.final_amount),
+          date: b.created_at,
+        };
+      }),
       ...payments.map((p) => {
         const bill = bills.find(b => b.id === p.bill_id);
         const patientName = patients.find(pat => pat.id === bill?.patient_id)?.name || '-';
         return {
           id: `payment-${p.id}`,
-          type: 'Specialist Bill',
+          type: 'Payment Received',
           patient_name: patientName,
           amount: Number(p.amount),
           date: p.created_at,
         };
       }),
-      ...labRequests.filter(l => l.payment_status === 'paid' && l.cost_birr > 0).map(l => {
+      ...labRequests.filter(l => l.cost_birr > 0).map(l => {
         return {
           id: `lab-${l.id}`,
           type: `Lab Test (${l.test_description})`,
@@ -202,7 +212,7 @@ const GeneralDoctorPage = () => {
         <Tabs defaultValue="patients" className="w-full">
           <TabsList className="grid w-full grid-cols-2 max-w-[400px]">
             <TabsTrigger value="patients">My Patients</TabsTrigger>
-            <TabsTrigger value="budget">Hospital Budget</TabsTrigger>
+            <TabsTrigger value="budget">Clinic Budget</TabsTrigger>
           </TabsList>
 
           <TabsContent value="patients" className="pt-4">
@@ -255,13 +265,13 @@ const GeneralDoctorPage = () => {
           <Card className="bg-primary text-primary-foreground">
             <CardContent className="p-6">
               <div className="flex items-center justify-between space-y-0 pb-2">
-                <p className="text-sm font-medium">Total Hospital Revenue</p>
+                <p className="text-sm font-medium">Total Clinic Revenue</p>
                 <DollarSign className="h-4 w-4 opacity-70" />
               </div>
               <div className="flex items-baseline space-x-2">
                 <h2 className="text-3xl font-bold">{formatBirr(totalIncome)}</h2>
               </div>
-              <p className="text-xs opacity-70 mt-1">From all recorded payments and lab fees</p>
+              <p className="text-xs opacity-70 mt-1">From all generated bills, payments and lab fees</p>
             </CardContent>
           </Card>
         </div>

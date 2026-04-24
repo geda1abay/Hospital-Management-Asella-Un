@@ -164,7 +164,7 @@ const PaymentsPage = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-heading text-2xl font-bold">Payments & Billing</h2>
-            <p className="text-muted-foreground">Manage hospital bills and laboratory payments</p>
+            <p className="text-muted-foreground">Manage clinic bills and laboratory payments</p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={handleExport} disabled={payments.length === 0}>
@@ -229,7 +229,7 @@ const PaymentsPage = () => {
 
         <Tabs defaultValue="hospital" className="w-full">
           <TabsList className="grid w-full grid-cols-3 max-w-[500px]">
-            <TabsTrigger value="hospital">Hospital Bills</TabsTrigger>
+            <TabsTrigger value="hospital">Clinic Bills</TabsTrigger>
             <TabsTrigger value="lab">Lab Payments</TabsTrigger>
             <TabsTrigger value="history">Transaction History</TabsTrigger>
           </TabsList>
@@ -272,7 +272,7 @@ const PaymentsPage = () => {
                       </TableRow>
                     ))}
                     {bills.length === 0 && (
-                      <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No hospital bills found</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No clinic bills found</TableCell></TableRow>
                     )}
                   </TableBody>
                 </Table>

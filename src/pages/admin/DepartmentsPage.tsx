@@ -107,7 +107,7 @@ const DepartmentsPage = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-heading text-2xl font-bold">Departments</h2>
-            <p className="text-muted-foreground">Manage hospital departments</p>
+            <p className="text-muted-foreground">Manage clinic departments</p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={handleExport} disabled={departments.length === 0}>

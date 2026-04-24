@@ -76,7 +76,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary">
             <Stethoscope className="h-4 w-4 text-sidebar-primary-foreground" />
           </div>
-          <span className="font-heading text-lg font-bold text-sidebar-foreground">Arsi University Hospital</span>
+          <span className="font-heading text-lg font-bold text-sidebar-foreground">Geda Clinic</span>
           <Button variant="ghost" size="icon" className="ml-auto lg:hidden text-sidebar-foreground" onClick={() => setSidebarOpen(false)}>
             <X className="h-5 w-5" />
           </Button>
